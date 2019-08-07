@@ -1,23 +1,41 @@
 package com.example.tiki_test
 
 import android.content.Context
+import android.content.res.Resources
 import android.util.Log
-import android.widget.ImageButton
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import kotlinx.android.synthetic.main.item_list_keyword.view.*
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.random.Random
 
-class KeywordAdapter(var items : ArrayList<String>, val context: Context) : RecyclerView.Adapter<KeywordViewHolder>() {
+
+private val BG_COLORS = arrayOf(
+    R.color.color1,
+        R.color.color2,
+        R.color.color3,
+        R.color.color4,
+        R.color.color5
+)
+
+
+class KeywordAdapter(var items: ArrayList<String>, val context: Context) : RecyclerView.Adapter<KeywordViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): KeywordViewHolder {
-        return KeywordViewHolder(LayoutInflater.from(context).inflate(R.layout.item_list_keyword, parent, false))
+        val rootView = LayoutInflater.from(context).inflate(R.layout.item_list_keyword, null, false)
+        val lp = RecyclerView.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT)
+        rootView.layoutParams = lp
+        return KeywordViewHolder(rootView)
     }
 
     override fun onBindViewHolder(holder: KeywordViewHolder, position: Int) {
         holder?.keywordTextView?.text = trimKeyword(items[position])
+
+        val bgColorIndex = Random.nextInt(BG_COLORS.size - 1)
+        holder?.keywordTextView?.background = context.getDrawable(BG_COLORS[bgColorIndex])
     }
 
     // Gets the number of animals in the list
@@ -25,32 +43,37 @@ class KeywordAdapter(var items : ArrayList<String>, val context: Context) : Recy
         return items.size
     }
 
-    final fun trimKeyword(keyword: String): String {
+    fun trimKeyword(keyword: String): String {
         if (keyword.indexOf(" ") == -1)
+            // no space
             return keyword
-        else {
-            val firstPart = keyword.substring(0, keyword.length/2)
-            val lastPart = keyword.substring(keyword.length/2, keyword.length)
+        else if (keyword.split(" ").size == 2) {
+            // one space
+            val replaceSpaceIndex = keyword.indexOf(" ")
+            return replaceText(keyword, "\n", replaceSpaceIndex)
+        } else {
+            val headStr = keyword.substring(0, keyword.length / 2)
+            val tailStr = keyword.substring(keyword.length / 2, keyword.length)
 
-            val spaceIndexOfFirst = firstPart.lastIndexOf(" ") - firstPart.length
-            val spaceIndexOfLast = lastPart.indexOf(" ")
-            if (spaceIndexOfFirst <= spaceIndexOfLast) {
-                val replaceSpaceIndex = firstPart.lastIndexOf(" ")
-                return replaceChar(keyword, "\n", replaceSpaceIndex)
+            val lastSpaceIndexOfHead = headStr.lastIndexOf(" ")
+            val inverseLastSpaceIndexOfHead = headStr.length - 1 - lastSpaceIndexOfHead
+            val firstSpaceIndexOfTail = tailStr.indexOf(" ")
+
+            if (inverseLastSpaceIndexOfHead <= firstSpaceIndexOfTail) {
+                val replaceSpaceIndex = headStr.lastIndexOf(" ")
+                return replaceText(keyword, "\n", replaceSpaceIndex)
             } else {
-                val replaceSpaceIndex = firstPart.length + spaceIndexOfLast
-//                Log.e("nghia", keyword)
-//                Log.e("nghia middle", ""+firstPart.length)
-//                Log.e("nghia f l", ""+spaceIndexOfFirst+"---"+ spaceIndexOfLast+"---")
-//                Log.e("nghia cut index", "---"+replaceSpaceIndex)
-                return replaceChar(keyword, "\n", replaceSpaceIndex)
+                val replaceSpaceIndex = headStr.length + firstSpaceIndexOfTail
+                return replaceText(keyword, "\n", replaceSpaceIndex)
             }
         }
     }
 
-    fun replaceChar(str: String, ch: String, index: Int): String {
-        Log.e("nghia", str + "---" + index)
-        return str.substring(0, index) + ch + str.substring(index + 1)
+    fun replaceText(mainText: String, newText: String, replaceIndex: Int): String {
+        Log.e("nghia", mainText + "---" + replaceIndex)
+        val firstStr = mainText.substring(0, replaceIndex)
+        val lastStr = mainText.substring(replaceIndex + 1)
+        return firstStr + newText + lastStr
     }
 }
 
