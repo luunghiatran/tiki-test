@@ -34,18 +34,22 @@ class KeywordAdapter(var items : ArrayList<String>, val context: Context) : Recy
 
             val spaceIndexOfFirst = firstPart.lastIndexOf(" ") - firstPart.length
             val spaceIndexOfLast = lastPart.indexOf(" ")
-            if (spaceIndexOfFirst >= spaceIndexOfLast) {
+            if (spaceIndexOfFirst <= spaceIndexOfLast) {
                 val replaceSpaceIndex = firstPart.lastIndexOf(" ")
                 return replaceChar(keyword, "\n", replaceSpaceIndex)
             } else {
                 val replaceSpaceIndex = firstPart.length + spaceIndexOfLast
+//                Log.e("nghia", keyword)
+//                Log.e("nghia middle", ""+firstPart.length)
+//                Log.e("nghia f l", ""+spaceIndexOfFirst+"---"+ spaceIndexOfLast+"---")
+//                Log.e("nghia cut index", "---"+replaceSpaceIndex)
                 return replaceChar(keyword, "\n", replaceSpaceIndex)
             }
-            return "2"
         }
     }
 
     fun replaceChar(str: String, ch: String, index: Int): String {
+        Log.e("nghia", str + "---" + index)
         return str.substring(0, index) + ch + str.substring(index + 1)
     }
 }
