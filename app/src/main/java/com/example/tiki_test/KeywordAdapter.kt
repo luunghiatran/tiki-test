@@ -1,24 +1,21 @@
 package com.example.tiki_test
 
 import android.content.Context
-import android.content.res.Resources
-import android.util.Log
 import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import kotlinx.android.synthetic.main.item_list_keyword.view.*
-import java.util.*
 import kotlin.collections.ArrayList
-import kotlin.random.Random
 
 
 private val BG_COLORS = arrayOf(
     R.color.color1,
-        R.color.color2,
-        R.color.color3,
-        R.color.color4,
-        R.color.color5
+    R.color.color2,
+    R.color.color3,
+    R.color.color4,
+    R.color.color5
 )
 
 
@@ -32,25 +29,24 @@ class KeywordAdapter(var items: ArrayList<String>, val context: Context) : Recyc
     }
 
     override fun onBindViewHolder(holder: KeywordViewHolder, position: Int) {
-        holder?.keywordTextView?.text = trimKeyword(items[position])
+        holder.keywordTextView?.text = trimKeyword(items[position])
 
-        val bgColorIndex = Random.nextInt(BG_COLORS.size - 1)
-        holder?.keywordTextView?.background = context.getDrawable(BG_COLORS[bgColorIndex])
+        val bgColorIndex = position % BG_COLORS.size
+        holder.keywordTextView?.background = context.getDrawable(BG_COLORS[bgColorIndex])
     }
 
-    // Gets the number of animals in the list
     override fun getItemCount(): Int {
         return items.size
     }
 
-    fun trimKeyword(keyword: String): String {
-        if (keyword.indexOf(" ") == -1)
+    private fun trimKeyword(keyword: String): String {
+        val firstSpaceIndex = keyword.indexOf(" ")
+        if (firstSpaceIndex == -1)
             // no space
             return keyword
-        else if (keyword.split(" ").size == 2) {
+        else if (firstSpaceIndex == keyword.lastIndexOf(" ")) {
             // one space
-            val replaceSpaceIndex = keyword.indexOf(" ")
-            return replaceText(keyword, "\n", replaceSpaceIndex)
+            return replaceText(keyword, "\n", firstSpaceIndex)
         } else {
             val headStr = keyword.substring(0, keyword.length / 2)
             val tailStr = keyword.substring(keyword.length / 2, keyword.length)
@@ -69,15 +65,16 @@ class KeywordAdapter(var items: ArrayList<String>, val context: Context) : Recyc
         }
     }
 
-    fun replaceText(mainText: String, newText: String, replaceIndex: Int): String {
-        Log.e("nghia", mainText + "---" + replaceIndex)
-        val firstStr = mainText.substring(0, replaceIndex)
-        val lastStr = mainText.substring(replaceIndex + 1)
-        return firstStr + newText + lastStr
+    private fun replaceText(mainText: String, newText: String, replaceIndex: Int): String {
+        if (replaceIndex > -1 && replaceIndex < mainText.length) {
+            val firstStr = mainText.substring(0, replaceIndex)
+            val lastStr = mainText.substring(replaceIndex + 1)
+            return firstStr + newText + lastStr
+        }
+        return mainText
     }
 }
 
 class KeywordViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-    // Holds the TextView that will add each animal to
-    val keywordTextView = view.keywordTextView
+    val keywordTextView: TextView? = view.keywordTextView
 }
