@@ -43,7 +43,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun fetchKeyword() {
-        val tikiService = TikiService().getInstance().create(TikiWS::class.java).getKeyword()
+        val tikiService = TikiService.getInstance().create(TikiWS::class.java).getKeyword()
         tikiService.enqueue(object: Callback<ArrayList<String>> {
             override fun onFailure(call: Call<ArrayList<String>>, t: Throwable) {
                 showError(t.message + "")
